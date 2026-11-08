@@ -1,56 +1,52 @@
-# Welcome to your Expo app 👋
+# Delivery Platform mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo SDK 57 application foundation for the Delivery Platform. The current Home/Explore screens are starter content, not implemented customer or driver workflows.
 
-## Get started
+## Local setup
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
+1. Install dependencies:
 
    ```bash
-   npx expo start
+   npm ci
    ```
 
-In the output, you'll find options to open the app in a
+2. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_API_URL` to an API URL reachable from the target device. `EXPO_PUBLIC_*` values are bundled into the app and must never contain secrets.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+3. Start Expo:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   ```bash
+   npm start
+   ```
 
-## Get a fresh project
+The app uses Expo Router for navigation. API calls go through `src/api`; authenticated requests obtain the access token from `expo-secure-store`. Access and refresh tokens are stored as separate device-only entries and are never placed in public environment variables or general-purpose async storage.
 
-When you're ready, run:
+`src/api/openapi.d.ts` is generated from the backend OpenAPI document. Use
+`requestContract(path, method, options)` for typed request bodies and successful responses,
+and `isApiErrorResponse` to narrow the standard error envelope. The typed client does not
+change SecureStore behavior or move credentials into general-purpose storage.
+
+Run the local quality checks with:
 
 ```bash
-npm run reset-project
+npm run typecheck
+npm run lint
+EXPO_PUBLIC_API_URL=http://localhost:3000 npm run build:web
+npx expo-doctor
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Refresh the checked API declaration from the backend with
+`cd ../delivery-backend && npm run contracts:generate`.
 
-### Other setup steps
+## Mobile packaging boundary
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+F05 keeps one Expo project and one shared authentication/API/session foundation. Customer and driver capabilities use the same `User` identity. This does not decide or simulate the future release packaging: U02 must explicitly choose one capability-routed binary or two binaries before the codebase is split. Until then, do not duplicate authentication pipelines or treat the starter routes as product workflows.
 
-## Learn more
+## Native acceptance
 
-To learn more about developing your project with Expo, look at the following resources:
+SecureStore calls must be checked on the supported Android and iOS devices before pilot acceptance. A web export, simulator, or mocked module does not prove native keychain/Keystore behavior.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Expo resources
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo SDK 57 documentation](https://docs.expo.dev/versions/v57.0.0/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Expo SecureStore](https://docs.expo.dev/versions/v57.0.0/sdk/securestore/)
