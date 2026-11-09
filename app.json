@@ -21,7 +21,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.alikashmar.deliverymobile"
+      "package": "com.alikashmar.deliverymobile",
+      "allowBackup": false
     },
     "web": {
       "output": "static",

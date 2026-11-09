@@ -24,6 +24,9 @@ type DeliveryReceiptRequest = ApiRequestBodyFor<"/deliveries/{id}/payments", "po
 type DriverActionResponse = ApiResponseFor<"/deliveries/{id}/actions", "post">;
 
 export type ContractTypeAssertions = [
+  Assert<IsString<NonNullable<DeliveryCreated["driverId"]>>>,
+  Assert<IsString<NonNullable<DeliveryCreated["businessId"]>>>,
+  Assert<IsString<NonNullable<DeliveryCreated["zoneId"]>>>,
   Assert<IsString<DeliveryReceiptRequest["amount"]>>,
   Assert<IsString<DeliveryReceiptRequest["receiptId"]>>,
   Assert<"COMPLETED" extends DriverActionResponse["status"] ? true : false>,

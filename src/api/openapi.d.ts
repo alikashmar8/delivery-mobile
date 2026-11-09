@@ -983,6 +983,7 @@ export interface components {
             country: string;
             /** Format: date-time */
             createdAt: string;
+            adminRoles: ("super_admin" | "admin" | "support")[];
             driverProfile: components["schemas"]["DriverProfileResponseDto"] | null;
         };
         UpdateAdminRolesDto: {
@@ -1097,11 +1098,11 @@ export interface components {
             id: string;
             trackingCode: string;
             /** Format: uuid */
-            businessId: Record<string, never> | null;
+            businessId: string | null;
             /** Format: uuid */
-            driverId: Record<string, never> | null;
+            driverId: string | null;
             /** Format: uuid */
-            zoneId: Record<string, never> | null;
+            zoneId: string | null;
             /** @enum {string} */
             status: "CREATED" | "ASSIGNED" | "ACCEPTED" | "PICKED_UP" | "IN_TRANSIT" | "ARRIVED" | "DELIVERED" | "COMPLETED" | "FAILED" | "RESCHEDULED" | "RETURNED" | "CANCELLED";
             version: number;
@@ -1495,11 +1496,11 @@ export interface components {
             id: string;
             trackingCode: string;
             /** Format: uuid */
-            businessId: Record<string, never> | null;
+            businessId: string | null;
             /** Format: uuid */
-            driverId: Record<string, never> | null;
+            driverId: string | null;
             /** Format: uuid */
-            zoneId: Record<string, never> | null;
+            zoneId: string | null;
             /** @enum {string} */
             status: "CREATED" | "ASSIGNED" | "ACCEPTED" | "PICKED_UP" | "IN_TRANSIT" | "ARRIVED" | "DELIVERED" | "COMPLETED" | "FAILED" | "RESCHEDULED" | "RETURNED" | "CANCELLED";
             version: number;
@@ -1550,7 +1551,7 @@ export interface components {
             /** @example LB */
             countryCode: string;
             /** Format: uuid */
-            regionId: Record<string, never> | null;
+            regionId: string | null;
             city: string;
             street: string | null;
             building: string | null;
@@ -1565,7 +1566,7 @@ export interface components {
             /** @example LB */
             countryCode: string;
             /** Format: uuid */
-            regionId: Record<string, never> | null;
+            regionId: string | null;
             city: string;
             street: Record<string, never> | null;
             building: Record<string, never> | null;
