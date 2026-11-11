@@ -9,12 +9,16 @@ const options = {
 const key = (ownerId: string) => `delivery-platform.driver.pending.${ownerId}`;
 export const pendingStorage: PendingStorage = {
   read: (ownerId) => SecureStore.getItemAsync(key(ownerId), options),
-  write: (ownerId, value) => SecureStore.setItemAsync(key(ownerId), value, options),
+  write: (ownerId, value) =>
+    SecureStore.setItemAsync(key(ownerId), value, options),
   remove: (ownerId) => SecureStore.deleteItemAsync(key(ownerId), options),
 };
 
 export function savedPhoto(uploadId: string, type: string): File {
-  return new File(Paths.document, `delivery-proof-${uploadId}.${type === 'image/png' ? 'png' : 'jpg'}`);
+  return new File(
+    Paths.document,
+    `delivery-proof-${uploadId}.${type === 'image/png' ? 'png' : 'jpg'}`,
+  );
 }
 
 export function retainPhoto(uploadId: string, file: File): File {
