@@ -1,6 +1,19 @@
-import { Fragment, createContext, use, useCallback, useEffect, useState, type ReactNode } from 'react';
+import {
+  Fragment,
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 import { apiClient, ApiError, type ApiSchemas } from '@/api';
-import { clearAuthTokens, readAuthTokens, storeAuthTokens, type AuthTokens } from '@/auth/token-storage';
+import {
+  clearAuthTokens,
+  readAuthTokens,
+  storeAuthTokens,
+  type AuthTokens,
+} from '@/auth/token-storage';
 import { errorMessage } from './ui';
 
 type Session = {
@@ -26,30 +39,46 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const tokens = await readAuthTokens();
-      if (!tokens) { setUser(null); return; }
+      if (!tokens) {
+        setUser(null);
+        return;
+      }
       try {
         setUser(await apiClient.requestContract('/users/me', 'get'));
       } catch (failure) {
-        if (!(failure instanceof ApiError) || failure.status !== 401) throw failure;
+        if (!(failure instanceof ApiError) || failure.status !== 401)
+          throw failure;
         try {
-          const rotated = await apiClient.requestContract('/auth/refresh', 'post', {
-            auth: 'none', json: { refreshToken: tokens.refreshToken },
-          });
+          const rotated = await apiClient.requestContract(
+            '/auth/refresh',
+            'post',
+            {
+              auth: 'none',
+              json: { refreshToken: tokens.refreshToken },
+            },
+          );
           await storeAuthTokens(rotated);
           setUser(await apiClient.requestContract('/users/me', 'get'));
         } catch (refreshError) {
           if (refreshError instanceof ApiError && refreshError.status === 401) {
-            await clearAuthTokens(); setUser(null);
+            await clearAuthTokens();
+            setUser(null);
           }
           throw refreshError;
         }
       }
-    } catch (failure) { setUser(null); setError(errorMessage(failure)); }
-    finally { setLoading(false); }
+    } catch (failure) {
+      setUser(null);
+      setError(errorMessage(failure));
+    } finally {
+      setLoading(false);
+    }
   }, []);
   // Initial server/storage synchronization needs a loading state before the asynchronous read.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void restore(); }, [restore]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void restore();
+  }, [restore]);
   async function login(tokens: AuthTokens) {
     await storeAuthTokens(tokens);
     await restore();
@@ -58,13 +87,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const tokens = await readAuthTokens();
-      if (tokens) await apiClient.requestContract('/auth/logout', 'post', {
-        auth: 'none', json: { refreshToken: tokens.refreshToken },
-      });
+      if (tokens)
+        await apiClient.requestContract('/auth/logout', 'post', {
+          auth: 'none',
+          json: { refreshToken: tokens.refreshToken },
+        });
       await clearAuthTokens();
-      setUser(null); setError(null);
-    } catch (failure) { setError(errorMessage(failure)); }
-    finally { setLoading(false); }
+      setUser(null);
+      setError(null);
+    } catch (failure) {
+      setError(errorMessage(failure));
+    } finally {
+      setLoading(false);
+    }
   }
-  return <Context value={{ user, loading, error, restore, login, logout }}><Fragment key={user?.id ?? 'signed-out'}>{children}</Fragment></Context>;
+  return (
+    <Context value={{ user, loading, error, restore, login, logout }}>
+      <Fragment key={user?.id ?? 'signed-out'}>{children}</Fragment>
+    </Context>
+  );
 }
